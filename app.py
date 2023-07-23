@@ -19,7 +19,7 @@ movies = [
 
 @app.route('/')
 def index():
-    return "<h1>Welcome!</h1>"+render_template('index.html',name=name,movies=movies)
+    return render_template('index.html',name=name,movies=movies)
 
 @app.route('/user/<name>')
 def user_page(name):
