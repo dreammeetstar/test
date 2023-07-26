@@ -22,15 +22,8 @@ app.config['SECRET_KEY'] = 'dev'  # 等同于 app.secret_key = 'dev'
 db = SQLAlchemy(app)
 
 login_manager = LoginManager(app)  # 实例化扩展类
-# 重定向操作
-login_manager.login_view = 'login'
-# 自定义错误提示消息
-# login_manager.login_message = ''
 
-@login_manager.user_loader
-def load_user(user_id):  # 创建用户加载回调函数，接受用户 ID 作为参数
-    user = User.query.get(int(user_id))  # 用 ID 作为 User 模型的主键查询对应的用户
-    return user  # 返回用户对象
+
 
 class User(db.Model, UserMixin):  # 表名将会是 user（自动生成，小写处理）
     """USER模型类"""
@@ -57,6 +50,16 @@ class Movie(db.Model):  # 表名将会是 movie
 def inject_user():
     user = User.query.first()
     return dict(user=user)
+
+@login_manager.user_loader
+def load_user(user_id):  # 创建用户加载回调函数，接受用户 ID 作为参数
+    user = User.query.get(int(user_id))  # 用 ID 作为 User 模型的主键查询对应的用户
+    return user  # 返回用户对象
+
+# 重定向操作
+login_manager.login_view = 'login'
+# 自定义错误提示消息
+# login_manager.login_message = ''
 
 @app.cli.command()  # 注册为命令，可以传入 name 参数来自定义命令
 @click.option('--drop', is_flag=True, help='Create after drop.')  # 设置选项
