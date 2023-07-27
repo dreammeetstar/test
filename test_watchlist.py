@@ -1,5 +1,6 @@
 import unittest
 import os
+import sys
 from watchlist import app, db
 from watchlist.models import Movie, User
 from watchlist.commands import forge, initdb
@@ -8,10 +9,16 @@ from watchlist.commands import forge, initdb
 class WatchlistTestCase(unittest.TestCase):
 
     def setUp(self):
+        # 判断前缀
+        WIN = sys.platform.startswith("win")
+        if WIN:
+            prefix = 'sqlite:///'
+        else:
+            prefix = 'sqlite:////'
         # 更新配置
         app.config.update(
             TESTING=True,
-            SQLALCHEMY_DATABASE_URI='sqlite:///:memory:'
+            SQLALCHEMY_DATABASE_URI=prefix + ':memory:'
         )
         # 创建数据库和表
         db.create_all()
