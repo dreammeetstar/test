@@ -10,6 +10,7 @@ class User(db.Model, UserMixin):  # 表名将会是 user（自动生成，小写
     name = db.Column(db.String(20))
     username = db.Column(db.String(20))  # 用户名
     password_hash = db.Column(db.String(128))  # 密码散列值
+    users = db.Column(db.String(20))
 
     def set_password(self, password):  # 用来设置密码的方法，接受密码作为参数
         self.password_hash = generate_password_hash(password)  # 将生成的密码保持到对应字段
@@ -22,3 +23,10 @@ class Movie(db.Model):  # 表名将会是 movie
     id = db.Column(db.Integer, primary_key=True)  # 主键
     title = db.Column(db.String(60))  # 电影标题
     year = db.Column(db.String(4))  # 电影年份
+
+
+class GiveSay(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120))
+    content = db.Column(db.String(900))
+    img = db.Column(db.String(200))
