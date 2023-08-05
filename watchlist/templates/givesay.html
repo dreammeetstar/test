@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h3>Give Say</h3>
+    <form method="post">
+        Name <input type="text" name="title" autocomplete="off" required value="{{ GiveSayUser.name }}">
+        Content <input type="text" name="content" autocomplete="off" required value="">
+        Img <input type="image" name="img" value="">
+        <input class="btn" type="submit" name="submit" value="Send">
+    </form>
+    {% for say in says %}
+        <ul class="movie-list">
+            <li>
+                <div>Her</div>
+                <div>{{ say['conten'] }}</div>
+                <img border=""  src="{{ say['picUrl'] }}" data-isphoto="1" data-limit="400,300" height="200" width=""></img>
+            </li>
+        </ul>
+    {% endfor%}
+{% endblock %}

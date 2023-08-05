@@ -2,7 +2,7 @@ from flask import render_template, url_for, request, flash, redirect
 from markupsafe import escape
 from flask_login import login_user, login_required, logout_user, current_user
 from watchlist import app, db
-from watchlist.models import User, Movie
+from watchlist.models import User, Movie, GiveSay
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -29,7 +29,7 @@ def index():
 
 @app.route('/user/<name>')
 def user_page(name):
-	return f"<h1>Welcome to My Test!</h1><div>hello!{escape(name)}</div><img src='http://helloflask.com/totoro.gif'>"
+    return f"<h1>Welcome to My Test!</h1><div>hello!{escape(name)}</div><img src='http://helloflask.com/totoro.gif'>"
 
 @app.route("/test")
 def test():
@@ -119,3 +119,26 @@ def settings():
 
     return render_template('settings.html')
 
+@app.route('/givesay', methods=['GET', 'POST'])
+def givesay():
+    if request.method == 'POST':
+        name = request.form['name']
+        content = request.form['content']
+        img = request.form['img']
+        if not name or not content or len(name) > 120 or len(content) > 900:
+            flash('Invalid input.')
+            return redirect(url_for('index'))
+        say = GiveSay(name=name, content=content, img=img)
+        db.session.add(say)
+        db.session.commit()
+        flash('Give say success.')
+        return redirect(url_for('givesay'))
+
+    if current_user.is_authenticated:
+        GiveSayUser = current_user
+    else:
+        GiveSayUser = ''
+    import requests, json
+    res = requests.get('https://raw.githubusercontent.com/FarEastSea/schedule/master/Zone/result.txt')
+    restext = json.loads(res.text)
+    return render_template('givesay.html', GiveSayUser=GiveSayUser, says=restext)
