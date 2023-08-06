@@ -1,19 +1,27 @@
-{% extends 'base.html' %}
+<link rel="stylesheet" href="../static/style.css">{% extends 'base.html' %}
 
 {% block content %}
     <h3>Give Say</h3>
     <form method="post">
-        Name <input type="text" name="title" autocomplete="off" required value="{{ GiveSayUser.name }}">
-        Content <input type="text" name="content" autocomplete="off" required value="">
-        Img <input type="image" name="img" value="">
+        Name <input type="text" name="name" autocomplete="off" required value="{{ GiveSayUser.name }}">
+        Content <input type="text" name="content" autocomplete="off" required value="111">
+        Img <input type="text" name="img" value="">
         <input class="btn" type="submit" name="submit" value="Send">
     </form>
-    {% for say in says %}
+    {% for say in sayList %}
         <ul class="movie-list">
             <li>
-                <div>Her</div>
-                <div>{{ say['conten'] }}</div>
-                <img border=""  src="{{ say['picUrl'] }}" data-isphoto="1" data-limit="400,300" height="200" width=""></img>
+                {% if (say is defined) and (say.__class__.__name__ == 'GiveSay') %}
+                    <div class="say-header">{{ say['name']}}</div>
+                    <div>{{ say['content'] }}</div>
+                    {% if say['img'] != "" %}
+                        <img border=""  src="{{ say['img'] }}" data-isphoto="1" data-limit="400,300" height="200" width=""></img>
+                    {% endif %}
+                {% elif (say is sequence) and (say is not string) and (say is mapping) and (say.items) %}
+                    <div class="say-header">Her</div>
+                    <div>{{ say['conten'] }}</div>
+                    <img border=""  src="{{ say['picUrl'] }}" data-isphoto="1" data-limit="400,300" height="200" width=""></img>
+                {% endif %}
             </li>
         </ul>
     {% endfor%}

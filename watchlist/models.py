@@ -28,5 +28,6 @@ class Movie(db.Model):  # 表名将会是 movie
 class GiveSay(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120))
-    content = db.Column(db.String(900))
+    content = db.Column(db.String(200))
     img = db.Column(db.String(200))
+    createTime = db.Column(db.Integer)

@@ -3,6 +3,7 @@ from markupsafe import escape
 from flask_login import login_user, login_required, logout_user, current_user
 from watchlist import app, db
 from watchlist.models import User, Movie, GiveSay
+import time
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -125,10 +126,11 @@ def givesay():
         name = request.form['name']
         content = request.form['content']
         img = request.form['img']
+        createTime = round(time.time())
         if not name or not content or len(name) > 120 or len(content) > 900:
             flash('Invalid input.')
-            return redirect(url_for('index'))
-        say = GiveSay(name=name, content=content, img=img)
+            return redirect(url_for('givesay'))
+        say = GiveSay(name=name, content=content, img=img, createTime=createTime)
         db.session.add(say)
         db.session.commit()
         flash('Give say success.')
@@ -141,4 +143,9 @@ def givesay():
     import requests, json
     res = requests.get('https://raw.githubusercontent.com/FarEastSea/schedule/master/Zone/result.txt')
     restext = json.loads(res.text)
-    return render_template('givesay.html', GiveSayUser=GiveSayUser, says=restext)
+    sayList = GiveSay.query.all()
+    sayList.extend(restext)
+    # if say['img'] is defined 提供一种思路，这是用在jinja2里的，python里可以判断是否为None
+    sayList.sort(key=lambda x: x['createTime'] if isinstance(x, dict) else x.createTime, reverse=True)
+    return render_template('givesay.html', GiveSayUser=GiveSayUser, sayList=sayList)
+
