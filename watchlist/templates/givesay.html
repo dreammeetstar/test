@@ -22,7 +22,11 @@
                 {% elif (say is sequence) and (say is not string) and (say is mapping) and (say.items) %}
                     <div class="say-header">{{ say['name'] }}</div>
                     <div>{{ say['content'] }}</div>
-                    <img border=""  src="{{ say['picUrl'] }}" data-isphoto="1" data-limit="400,300" height="200" width=""></img>
+                    {% if say['picUrl'] != "" %}
+                        <!-- 一个空间获取，一个GitHub获取 -->
+                        {# <img border=""  src="{{ say['picUrl'] }}" data-isphoto="1" data-limit="400,300" height="200" width=""></img> #}
+                        <img border=""  src="https://raw.githubusercontent.com/FarEastSea/schedule/master/Zone/Img/{{ say['createTime'] }}" data-isphoto="1" data-limit="400,300" height="200" width=""></img>
+                    {% endif %}
                 {% endif %}
             </li>
         </ul>
