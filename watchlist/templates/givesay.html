@@ -8,7 +8,8 @@
         {% if current_user.is_authenticated %}
             Img <input type="text" name="img" value="">
         {% else %}
-            Img <input type="text" name="img" value="" height="0" width="">
+            <!-- hidden style="display:none" style="visibility:hidden" -->
+            <input type="text" name="img" value="" hidden>
         {% endif %}
         <input class="btn" type="submit" name="submit" value="Send">
     </form>
