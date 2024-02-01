@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>连接词高亮及删除工具</title>
+    <style>
+        .highlight {
+            color: red; /* 高亮颜色 */
+            font-weight: bold;
+        }
+        .highlightblue {
+            color: blue; /* 高亮颜色 */
+            font-weight: bold;
+        }
+
+        html,body {
+            //background-color: #000;
+        }
+        textarea {
+            //resize:vertical;
+            //overflow:hidden;
+            height:auto;
+            width:auto;
+            min-width:90%;
+            min-height:20%;
+            padding:10px 10px;
+            border: 3px solid #555555;
+            border-color: #b8daff;
+            border-radius: 15px;
+            display:inline-block;
+            margin:5px;
+            //float:left;
+            //display:inline;
+        }
+    </style>
+</head>
+<body>
+    <h2>连接词高亮及删除工具</h2>
+    <textarea id="textInput" class="a" rows="3" cols="50"></textarea><br>
+    <button onclick="highlightWords()">高亮连接词</button>
+    <button onclick="removeHighlights()">删除高亮词组</button>
+    <div id="result"></div>
+    <textarea id="restext" class="a" rows="6"></textarea>
+
+    <script>
+
+function highlightWords() {
+    let text = document.getElementById('textInput').value;
+    const wordsToHighlight = ["首先", "然而", "并且", "此外", "其次", "然后", "总之", "因此", "值得注意的是", "但是", "同时", "此外", "总之", "通常", "目前", "综上所述", "总的来说","可是", "故此", "再次", "此后", "最后", "一般来说", "你们的","你们","你", "我们的","我们","我","他们的","对他们","他们","他的","([^其])他([^人们的])","大家的","为大家","大家","您的","您", "1、", "2、", "3、", "4、", "5、", "6、", "目前","【\\d+?†source】","¹","²","³","⁴","⁵"];
+    //let words2 = ["我的"];
+    const regex = new RegExp(`(${wordsToHighlight.join('|')})`, 'gi');
+    //const regex2 = new RegExp(`(${words2.join('|')})`, 'gi');
+    //text = text.replace(regex2, '<span class="highlight">$1</span>');
+    text = text.replace(/我的/g, '<span class="highlightblue">个人中心</span>');
+    const highlightedText = text.replace(regex, '<span class="highlightblue">$2</span><span class="highlight">$1</span><span class="highlightblue">$3</span>');
+    document.getElementById('result').innerHTML = highlightedText.replace(/\n/g, '<br>');
+
+}
+
+function removeHighlights() {
+    let resultText = document.getElementById('result').innerHTML;
+    // 更新正则表达式以包括紧随其后的任何符号
+    resultText = resultText.replace(/<span class="highlight">([¹²³⁴]*?)<\/span>|<span class="highlight">(.*?)<\/span>([，。；？！,.;?!]*)/g, '');
+    //document.getElementById('result').innerHTML = resultText;
+    const regexp1 = new RegExp(`<span class="highlightblue">(.*?)<\/span>`, 'gi');
+    resultText = resultText.replace(regexp1, '$1' );
+document.getElementById('restext').value = resultText.replace(/<br>/g, '\n');
+}
+
+
+var maxWidth = 1500;
+var maxHeight = 1000;
+document.querySelector("textarea").addEventListener("input",function(){
+    highlightWords();
+    removeHighlights();
+  });
+document.getElementById('restext').addEventListener("change",function(){
+    this.style.height="auto";//让 scrollWidth 获取最小值，达到回缩的效果
+    this.style.height=((this.scrollHeight<maxHeight)?this.scrollHeight:maxHeight)+"px";
+//document.getElementById('restext').value =this.scrollWidth+"\n"+this.scrollHeight
+  });
+
+
+    </script>
+</body>
+</html>
