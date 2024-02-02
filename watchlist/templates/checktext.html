@@ -51,7 +51,7 @@
 
 function highlightWords() {
     let text = document.getElementById('textInput').value;
-    const wordsToHighlight = ["首先", "然而", "并且", "此外", "其次", "然后", "总之", "因此", "值得注意的是", "但是", "同时", "此外", "总之", "通常", "目前", "综上所述", "总的来说","可是", "故此", "再次", "此后", "最后", "一般来说", "1、", "2、", "3、", "4、", "5、", "6、", "目前","【\\d+?†source】","¹","²","³","⁴","⁵"];
+    const wordsToHighlight = ["首先", "然而", "并且", "此外", "其次", "然后", "总之", "因此", "值得注意的是", "但是", "同时", "此外", "总之", "通常", "目前", "综上所述", "总的来说","可是", "故此", "再次", "此后", "最后的?", "一般来说", "1、", "2、", "3、", "4、", "5、", "6、", "目前","【\\d+?†source】","¹","²","³","⁴","⁵"];
     let blueWords = ["([^其])(对?为?(?:[我你他您]|大家)们?的?)([^人])"];
     const regex = new RegExp(`(${wordsToHighlight.join('|')})`, 'gi');
     const regexBlue = new RegExp(`(?:${blueWords.join('|')})`, 'gi');
@@ -69,21 +69,29 @@ function removeHighlights() {
     //document.getElementById('result').innerHTML = resultText;
     const regexp1 = new RegExp(`<span class="highlightblue">(.*?)<\/span>`, 'gi');
     resultText = resultText.replace(regexp1, '$1' );
-document.getElementById('restext').value = resultText.replace(/<br>/g, '\n');
+    document.getElementById('restext').value = resultText.replace(/<br>/g, '\n');
 }
 
+function autoTextArea( self, maxHeight = 1000 ) {
+    // 文本框高度自适应
+    // 宽度无法自适应
+    // document.getElementById('restext').value = self ;
+    this.style.height="auto";//让 scrollHeight 获取最小值，达到回缩的效果
+    this.style.height=((this.scrollHeight<maxHeight)?this.scrollHeight:maxHeight)+"px";
+    //document.getElementById('restext').value =this.scrollWidth+"\n"+this.scrollHeight;
+  }
 
-var maxWidth = 1500;
-var maxHeight = 1000;
 document.querySelector("textarea").addEventListener("input",function(){
     highlightWords();
     removeHighlights();
+    // 输入栏输入后，输出栏根据结果内容自动调整高度
+    var restext = document.getElementById('restext');
+    let maxHeight = 1000;
+    restext.style.height="auto";
+    restext.style.height=((restext.scrollHeight<maxHeight)?restext.scrollHeight:maxHeight)+'px';
   });
-document.getElementById('restext').addEventListener("change",function(){
-    this.style.height="auto";//让 scrollWidth 获取最小值，达到回缩的效果
-    this.style.height=((this.scrollHeight<maxHeight)?this.scrollHeight:maxHeight)+"px";
-//document.getElementById('restext').value =this.scrollWidth+"\n"+this.scrollHeight
-  });
+
+document.getElementById('restext').addEventListener("input", autoTextArea );
 
 
     </script>
