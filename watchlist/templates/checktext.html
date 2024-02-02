@@ -14,14 +14,18 @@
         }
 
         html,body {
-            //background-color: #000;
+            background-color: inherit;
+            color: inherit;
         }
         textarea {
+            background-color: transparent;
+            color: inherit;
+            font: normal normal 1em/normal "宋体","Times New Roman",serif;
             //resize:vertical;
             //overflow:hidden;
             height:auto;
             width:auto;
-            min-width:90%;
+            min-width:95%;
             min-height:20%;
             padding:10px 10px;
             border: 3px solid #555555;
@@ -37,10 +41,32 @@
             width: 0;
             height: 0;
         }
+        .inputForm {
+            margin: 0.1rem 0.5rem;
+            display: inline;
+        }
+        .reTextInput {
+            background-color: transparent;
+            color: inherit;
+            margin: 0.1rem 0.1rem;
+            padding: 0.3rem 0.3rem;
+            border: 3px solid blueviolet;
+            border-radius: 10px;
+            font: normal normal 1em/normal "宋体","Times New Roman",Times,serif;
+        }
+        [name="Highlight"] {
+            width: 35%;
+        }
     </style>
 </head>
 <body>
-    <h2>连接词高亮及删除工具</h2>
+    <h2 align="center">连接词高亮及删除工具</h2>
+    <form class="inputForm">
+        高亮 <input type="text" id="Highlight" class="reTextInput" name="Highlight" autocomplete="off" value="">
+        正则 <input type="text" id="reText" class="reTextInput" name="reText" autocomplete="off" value="">
+        原字符 <input type="text" id="originText" class="reTextInput" name="originText" autocomplete="off" value="">
+        替换字符 <input type="text" id="subText" class="reTextInput" name="subText" autocomplete="off" value="">
+    </form>
     <textarea id="textInput" class="a" rows="3" cols="50"></textarea><br>
 <!--    <button onclick="highlightWords()">高亮连接词</button>-->
 <!--    <button onclick="removeHighlights()">删除高亮词组</button>-->
@@ -48,16 +74,64 @@
     <textarea id="restext" class="a" rows="6"></textarea>
 
     <script>
+        // 改变页面背景颜色
+        const now = new Date()
+        const hour = now.getHours()
+        if (hour > 7 && hour <= 23) {
+            document.documentElement.style.backgroundColor = "snow";
+            // document.body.style.backgroundColor = "white";
+            document.body.style.color = "black";
+        }
+        else {
+            document.documentElement.style.backgroundColor = "black";
+            document.body.style.color = "snow";
+        }
+
+        const Highlight = document.getElementsByName('Highlight')[0];
+        const reText = document.getElementsByName('reText')[0];
+        const originText = document.getElementsByName('originText')[0];
+        const subText = document.getElementsByName('subText')[0];
+        const seq = ' ';
+        if ( !Highlight.value ) {
+            let _Highlight = ["首先", "然而", "并且", "此外", "其次", "然后", "总之", "因此", "值得注意的是", "但是", "同时", "此外", "总之", "通常", "目前", "综上所述", "总的来说", "可是", "故此", "再次", "此后", "最后的?", "一般来说", "1、", "2、", "3、", "4、", "5、", "6、", "目前", "【\\d+?†source】", "¹", "²", "³", "⁴", "⁵"];
+            Highlight.value = _Highlight.join(seq);
+        }
+        if ( !reText.value ) {
+            let _reText = ["([^其])(对?为?(?:[我你他您]|大家)们?的?)([^人])"];
+            reText.value = _reText.join(seq);
+        }
+        if ( !originText.value ) {
+            let _originText = ['我的','最后的'];
+            originText.value = _originText.join(seq);
+        }
+        if ( !subText.value ) {
+            let _subText = ['个人中心','最终'];
+            subText.value = _subText.join(seq);
+        }
+
 
 function highlightWords() {
+    // 得到值
     let text = document.getElementById('textInput').value;
-    const wordsToHighlight = ["首先", "然而", "并且", "此外", "其次", "然后", "总之", "因此", "值得注意的是", "但是", "同时", "此外", "总之", "通常", "目前", "综上所述", "总的来说","可是", "故此", "再次", "此后", "最后的?", "一般来说", "1、", "2、", "3、", "4、", "5、", "6、", "目前","【\\d+?†source】","¹","²","³","⁴","⁵"];
-    let blueWords = ["([^其])(对?为?(?:[我你他您]|大家)们?的?)([^人])"];
+    // 匹配字符
+    const wordsToHighlight = document.getElementsByName('Highlight')[0].value.split(seq);
+    let blueWords = document.getElementsByName('reText')[0].value.split(seq);
+    // 匹配要删掉的字，变为红字
     const regex = new RegExp(`(${wordsToHighlight.join('|')})`, 'gi');
+    text = text.replace(regex, '<span class="highlight">$1</span>');
+    // 匹配成蓝红蓝，只删红字
     const regexBlue = new RegExp(`(?:${blueWords.join('|')})`, 'gi');
     text = text.replace(regexBlue, '<span class="highlightblue">$1</span><span class="highlight">$2</span><span class="highlightblue">$3</span>');
-    text = text.replace(/<span class="highlight">我的<\/span>/g, '<span class="highlightblue">个人中心</span>');
-    const highlightedText = text.replace(regex, '<span class="highlight">$1</span>');
+    // 匹配字符
+    let originText = document.getElementsByName('originText')[0].value.split(seq);
+    let subText = document.getElementsByName('subText')[0].value.split(seq);
+    // 文字替换成对应词语
+    for ( let i of originText) {
+        const regexSub = new RegExp(`<span class="highlight">${i}</span>`, 'gi');
+        text = text.replace(regexSub, `<span class="highlightblue">${subText[originText.indexOf(i)]}</span>`);
+    }
+    const highlightedText = text;
+    // 写入
     document.getElementById('result').innerHTML = highlightedText.replace(/\n/g, '<br>');
 
 }
