@@ -149,6 +149,6 @@ def givesay():
     sayList.sort(key=lambda x: x['createTime'] if isinstance(x, dict) else x.createTime, reverse=True)
     return render_template('givesay.html', GiveSayUser=GiveSayUser, sayList=sayList)
 
-@app.route('/checktext', methods=['GET','POST'])
+@app.route('/checktext', methods=['GET'])
 def checktext():
     return render_template('checktext.html')
