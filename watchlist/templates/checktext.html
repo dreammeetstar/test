@@ -72,6 +72,7 @@
 <!--    <button onclick="removeHighlights()">删除高亮词组</button>-->
     <div id="result"></div>
     <textarea id="restext" class="a" rows="6"></textarea>
+    <div id="textNumber" align="center"></div>
 
     <script>
         // 改变页面背景颜色
@@ -93,19 +94,24 @@
         const subText = document.getElementsByName('subText')[0];
         const seq = ' ';
         if ( !Highlight.value ) {
-            let _Highlight = ["首先", "然而", "并且", "此外", "其次", "然后", "总之", "因此", "值得注意的是", "但是", "同时", "此外", "总之", "通常", "目前", "综上所述", "总的来说", "可是", "故此", "再次", "此后", "最后的?", "一般来说", "1、", "2、", "3、", "4、", "5、", "6、", "目前", "【\\d+?†source】", "¹", "²", "³", "⁴", "⁵"];
+            let _Highlight = ["首先", "然而", "并且", "此外", "其次", "然后", "总之", "因此", "值得注意的是", "但是", "同时", "此外", "总之", "通常", "目前", "综上所述", "总的来说", "可是", "故此", "再次", "此后", "最后的?", "一般来说", "1、", "2、", "3、", "4、", "5、", "6、", "目前", "【.*?†source】", "¹", "²", "³", "⁴", "⁵", "⁷", "⁸", "⁹"];
             Highlight.value = _Highlight.join(seq);
         }
         if ( !reText.value ) {
-            let _reText = ["([^其])(对?为?(?:[我你他您]|大家)们?的?)([^人])"];
+            const pre_text = "[^其自>]"
+            const pre_text2 = "[^其自]"
+            const mid_text = "对?为?(?:[我你他您]|大家)们?的?"
+            const aft_text = "[^人<]"
+            const aft_text2 = "[^人]"
+            let _reText = [`(${pre_text})(${mid_text})(${aft_text})`, `(${pre_text2})(${mid_text})(${aft_text2})`];
             reText.value = _reText.join(seq);
         }
         if ( !originText.value ) {
-            let _originText = ['我的','最后的'];
+            let _originText = ['我的','最后的', "的同时"];
             originText.value = _originText.join(seq);
         }
         if ( !subText.value ) {
-            let _subText = ['个人中心','最终'];
+            let _subText = ['个人中心','最终', "时"];
             subText.value = _subText.join(seq);
         }
 
@@ -114,6 +120,14 @@ function highlightWords() {
     // 得到值
     let text = document.getElementById('textInput').value;
     // 匹配字符
+    let originText = document.getElementsByName('originText')[0].value.split(seq);
+    let subText = document.getElementsByName('subText')[0].value.split(seq);
+    // 文字替换成对应词语
+    for ( let i of originText) {
+        const regexSub = new RegExp(`${i}`, 'gi');
+        text = text.replace(regexSub, `<span class="highlightblue">${subText[originText.indexOf(i)]}</span>`);
+    }
+    // 匹配字符
     const wordsToHighlight = document.getElementsByName('Highlight')[0].value.split(seq);
     let blueWords = document.getElementsByName('reText')[0].value.split(seq);
     // 匹配要删掉的字，变为红字
@@ -121,25 +135,24 @@ function highlightWords() {
     text = text.replace(regex, '<span class="highlight">$1</span>');
     // 匹配成蓝红蓝，只删红字
     const regexBlue = new RegExp(`(?:${blueWords.join('|')})`, 'gi');
-    text = text.replace(regexBlue, '<span class="highlightblue">$1</span><span class="highlight">$2</span><span class="highlightblue">$3</span>');
-    // 匹配字符
-    let originText = document.getElementsByName('originText')[0].value.split(seq);
-    let subText = document.getElementsByName('subText')[0].value.split(seq);
-    // 文字替换成对应词语
+    text = text.replace(regexBlue, '$4<span class="highlightblue">$1</span><span class="highlight">$2$5</span><span class="highlightblue">$3</span>$6');
+    // 文字替换成对应词语,将红字变为蓝字
     for ( let i of originText) {
         const regexSub = new RegExp(`<span class="highlight">${i}</span>`, 'gi');
         text = text.replace(regexSub, `<span class="highlightblue">${subText[originText.indexOf(i)]}</span>`);
     }
-    const highlightedText = text;
+    const highlightedText = text.replace(/\n/g, '<br>');
     // 写入
-    document.getElementById('result').innerHTML = highlightedText.replace(/\n/g, '<br>');
+    document.getElementById('result').innerHTML = highlightedText;
+    // 统计字数
+    document.getElementById('textNumber').innerHTML = highlightedText.length.toString();
 
 }
 
 function removeHighlights() {
     let resultText = document.getElementById('result').innerHTML;
     // 更新正则表达式以包括紧随其后的任何符号
-    resultText = resultText.replace(/<span class="highlight">([¹²³⁴]?|【\d+?†source】)<\/span>|<span class="highlight">(.*?)<\/span>([，。；？！,.;?!]*)/g, '');
+    resultText = resultText.replace(/<span class="highlight">([¹²³⁴]?|【.*?†source】)<\/span>|<span class="highlight">(.*?)<\/span>([，。；？！,.;?!]*)/g, '');
     //document.getElementById('result').innerHTML = resultText;
     const regexp1 = new RegExp(`<span class="highlightblue">(.*?)<\/span>`, 'gi');
     resultText = resultText.replace(regexp1, '$1' );
@@ -149,10 +162,12 @@ function removeHighlights() {
 function autoTextArea( self, maxHeight = 1000 ) {
     // 文本框高度自适应
     // 宽度无法自适应
-    // document.getElementById('restext').value = self ;
-    this.style.height="auto";//让 scrollHeight 获取最小值，达到回缩的效果
-    this.style.height=((this.scrollHeight<maxHeight)?this.scrollHeight:maxHeight)+"px";
-    //document.getElementById('restext').value =this.scrollWidth+"\n"+this.scrollHeight;
+    self.style.height="auto";//让 scrollHeight 获取最小值，达到回缩的效果
+    self.style.height=((self.scrollHeight<maxHeight)?self.scrollHeight:maxHeight)+"px";
+    // 若事件监听器直接引用函数，可以使用this
+    // this.style.height="auto";
+    // this.style.height=((this.scrollHeight<maxHeight)?this.scrollHeight:maxHeight)+"px";
+    // document.getElementById('restext').value =this.scrollWidth+"\n"+this.scrollHeight;
   }
 
 document.querySelector("textarea").addEventListener("input",function(){
@@ -165,7 +180,10 @@ document.querySelector("textarea").addEventListener("input",function(){
     restext.style.height=((restext.scrollHeight<maxHeight)?restext.scrollHeight:maxHeight)+'px';
   });
 
-document.getElementById('restext').addEventListener("input", autoTextArea );
+document.getElementById('restext').addEventListener("input", function () {
+    autoTextArea(this);
+    document.getElementById('textNumber').innerHTML = this.value.length.toString()
+} );
 
 
     </script>
