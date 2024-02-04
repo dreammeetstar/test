@@ -71,8 +71,8 @@
 <!--    <button onclick="highlightWords()">高亮连接词</button>-->
 <!--    <button onclick="removeHighlights()">删除高亮词组</button>-->
     <div id="result"></div>
+    <div id="textNumber" align="center" style="color: deeppink"></div>
     <textarea id="restext" class="a" rows="6"></textarea>
-    <div id="textNumber" align="center"></div>
 
     <script>
         // 改变页面背景颜色
@@ -114,6 +114,8 @@
             let _subText = ['个人中心','最终', "时"];
             subText.value = _subText.join(seq);
         }
+        // 统计字符串数量时忽略的字符
+        const ignoreText = /[\n ]/g;
 
 
 function highlightWords() {
@@ -145,7 +147,8 @@ function highlightWords() {
     // 写入
     document.getElementById('result').innerHTML = highlightedText;
     // 统计字数
-    document.getElementById('textNumber').innerHTML = highlightedText.length.toString();
+    const length = highlightedText.replace(ignoreText,'').length;
+    document.getElementById('textNumber').innerHTML = length.toString();
 
 }
 
@@ -182,7 +185,8 @@ document.querySelector("textarea").addEventListener("input",function(){
 
 document.getElementById('restext').addEventListener("input", function () {
     autoTextArea(this);
-    document.getElementById('textNumber').innerHTML = this.value.length.toString()
+    const length = this.value.replace(ignoreText, '').length;
+    document.getElementById('textNumber').innerHTML = length.toString();
 } );
 
 
