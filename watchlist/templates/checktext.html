@@ -92,9 +92,9 @@
         const reText = document.getElementsByName('reText')[0];
         const originText = document.getElementsByName('originText')[0];
         const subText = document.getElementsByName('subText')[0];
-        const seq = ' ';
+        const seq = '，';
         if ( !Highlight.value ) {
-            let _Highlight = ["首先", "然而", "并且", "此外", "其次", "然后", "总之", "因此", "值得注意的是", "但是", "同时", "此外", "总之", "通常", "目前", "综上所述", "总的来说", "可是", "故此", "再次", "此后", "最后的?", "一般来说", "1、", "2、", "3、", "4、", "5、", "6、", "目前", "【.*?†source】", "¹", "²", "³", "⁴", "⁵", "⁷", "⁸", "⁹"];
+            let _Highlight = ["首先", "然而", "并且", "此外", "其次", "然后", "总之", "因此", "值得注意的是", "但是", "同时", "此外", "总之", "通常", "目前", "综上所述", "总的来说", "可是", "故此", "再次", "此后", "最后的?", "一般来说", "1、", "2、", "3、", "4、", "5、", "6、", "目前", "【.*?†source】", "¹", "²", "³", "⁴", "⁵", "⁷", "⁸", "⁹", "", " "];
             Highlight.value = _Highlight.join(seq);
         }
         if ( !reText.value ) {
@@ -154,11 +154,12 @@ function highlightWords() {
 
 function removeHighlights() {
     let resultText = document.getElementById('result').innerHTML;
+    // 先将蓝色字体恢复原样
+    const regexp1 = new RegExp(`<span class="highlightblue">(.*?)<\/span>`, 'gi');
+    resultText = resultText.replace(regexp1, '$1' );
     // 更新正则表达式以包括紧随其后的任何符号
     resultText = resultText.replace(/<span class="highlight">([¹²³⁴]?|【.*?†source】)<\/span>|<span class="highlight">(.*?)<\/span>([，。；？！,.;?!]*)/g, '');
     //document.getElementById('result').innerHTML = resultText;
-    const regexp1 = new RegExp(`<span class="highlightblue">(.*?)<\/span>`, 'gi');
-    resultText = resultText.replace(regexp1, '$1' );
     document.getElementById('restext').value = resultText.replace(/<br>/g, '\n');
 }
 
