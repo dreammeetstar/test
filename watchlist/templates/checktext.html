@@ -71,7 +71,12 @@
 <!--    <button onclick="highlightWords()">高亮连接词</button>-->
 <!--    <button onclick="removeHighlights()">删除高亮词组</button>-->
     <div id="result"></div>
-    <div id="textNumber" align="center" style="color: deeppink"></div>
+    <div align="center">
+        <p style="color: burlywood">
+            字数统计：
+            <span id="textNumber" style="color: lime">0</span>
+        </p>
+    </div>
     <textarea id="restext" class="a" rows="6"></textarea>
 
     <script>
@@ -94,24 +99,24 @@
         const subText = document.getElementsByName('subText')[0];
         const seq = '，';
         if ( !Highlight.value ) {
-            let _Highlight = ["首先", "然而", "并且", "此外", "其次", "然后", "总之", "因此", "值得注意的是", "但是", "同时", "此外", "总之", "通常", "目前", "综上所述", "总的来说", "可是", "故此", "再次", "此后", "最后的?", "一般来说", "1、", "2、", "3、", "4、", "5、", "6、", "目前", "【.*?†source】", "¹", "²", "³", "⁴", "⁵", "⁷", "⁸", "⁹", "", " "];
+            let _Highlight = ["首先", "然而", "并且", "此外", "其次", "然后", "总之", "因此", "值得注意的是", "但是", "同时", "此外", "总之", "通常", "目前", "综上所述", "总的来说", "可是", "故此", "再次", "此后", "最后的?", "一般来说", "1、", "2、", "3、", "4、", "5、", "6、", "目前", "【.*?†source】", "¹", "²", "³", "⁴", "⁵", "⁷", "⁸", "⁹", "", "\\*", "#"];
             Highlight.value = _Highlight.join(seq);
         }
         if ( !reText.value ) {
             const pre_text = "[^其自>]"
             const pre_text2 = "[^其自]"
-            const mid_text = "对?为?(?:[我你他您]|大家)们?的?"
+            const mid_text = "[对为]?(?:[我你他您]|大家)[们的]?"
             const aft_text = "[^人<]"
             const aft_text2 = "[^人]"
             let _reText = [`(${pre_text})(${mid_text})(${aft_text})`, `(${pre_text2})(${mid_text})(${aft_text2})`];
             reText.value = _reText.join(seq);
         }
         if ( !originText.value ) {
-            let _originText = ['我的','最后的', "的同时"];
+            let _originText = [" ", "\\.", '我的','最后的', "的同时"];
             originText.value = _originText.join(seq);
         }
         if ( !subText.value ) {
-            let _subText = ['个人中心','最终', "时"];
+            let _subText = ["", "。", '个人中心','最终', "时"];
             subText.value = _subText.join(seq);
         }
         // 统计字符串数量时忽略的字符
