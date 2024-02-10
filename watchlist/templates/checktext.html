@@ -36,10 +36,30 @@
             //float:left;
             //display:inline;
         }
+        textarea:focus {
+            /*取消浏览器默认样式*/
+            outline: 0;
+            border: 3px solid lightskyblue;
+            /*inset 将外部阴影 (outset) 改为内部阴影。*/
+            box-shadow: 0px 0px 10px 5px yellow;
+            /*渐变过渡*/
+            transition: border ease-in-out 0.1s 0s, box-shadow ease-in-out 0.1s 0s;
+        }
         button {
-            visibility: hidden;
-            width: 0;
-            height: 0;
+            /*visibility: hidden;*/
+            /*width: 0;*/
+            /*height: 0;*/
+            border: 3px solid blue;
+            /*border-style: solid dotted dashed double;*/
+            /*border-width: thin medium thick 3px;*/
+            /*border-color: deepskyblue rebeccapurple rgb(255,0,0) #ff0000;*/
+            border-radius: 10px;
+            /*border-radius: 10px 5px 7px 0px / 10px 5px 7px 0px;*/
+            background-color: yellow;
+            color: initial;
+            font: normal bold 1em/normal "宋体","Times New Roman",serif;
+            padding: 1px 8px;
+            margin: 0px 5px;
         }
         .inputForm {
             margin: 0.1rem 0.5rem;
@@ -57,6 +77,15 @@
         [name="Highlight"] {
             width: 35%;
         }
+        /* 输入框为空时显示 placeholder */
+        /*#dzm-textarea:empty:before {*/
+        /*  content: attr(placeholder);*/
+        /*  color: red;*/
+        /*}*/
+        /* 输入框获取焦点时移除 placeholder */
+        /*#dzm-textarea:focus:before {*/
+        /*  content: none;*/
+        /*}*/
     </style>
 </head>
 <body>
@@ -75,9 +104,10 @@
         <p style="color: burlywood">
             字数统计：
             <span id="textNumber" style="color: lime">0</span>
+            <button onclick="allSelect_inputElement('resText')">全选</button>
         </p>
     </div>
-    <textarea id="restext" class="a" rows="6"></textarea>
+    <textarea id="resText" class="a" rows="6"></textarea>
 
     <script>
         // 改变页面背景颜色
@@ -97,26 +127,26 @@
         const reText = document.getElementsByName('reText')[0];
         const originText = document.getElementsByName('originText')[0];
         const subText = document.getElementsByName('subText')[0];
-        const seq = '，';
+        const seq = ',';
         if ( !Highlight.value ) {
-            let _Highlight = ["首先", "然而", "并且", "此外", "其次", "然后", "总之", "因此", "值得注意的是", "但是", "同时", "此外", "总之", "通常", "目前", "综上所述", "总的来说", "可是", "故此", "再次", "此后", "最后的?", "一般来说", "1、", "2、", "3、", "4、", "5、", "6、", "目前", "【.*?†source】", "¹", "²", "³", "⁴", "⁵", "⁷", "⁸", "⁹", "", "\\*", "#"];
+            let _Highlight = ["首先","然而","因此","值得注意的是","然后","但是","同时","此外","总之","通常","目前","综上所述","需要注意的是","可是","故此","再次","此后","最后的?","一般来说","1、" ,"2、","3、","5、","6、","其次","在这样的情况下","除了以上提","(?:为了)?解决这一(?:问题)?","因此","以下将","百度百科","但幸运的是","总体而言","但在探讨","接下来","近年来","这是一个","作为现代","在这一过程中","上述提到","以上四种","为此下面将","以下几个方面","四个方面", "【.*?†source】", "【.*?†来源】", "¹", "²", "³", "⁴", "⁵", "⁷", "⁸", "⁹", "", "\\*", "#"];
             Highlight.value = _Highlight.join(seq);
         }
         if ( !reText.value ) {
-            const pre_text = "[^其自>]"
-            const pre_text2 = "[^其自]"
-            const mid_text = "[对为]?(?:[我你他您]|大家)[们的]?"
-            const aft_text = "[^人<]"
-            const aft_text2 = "[^人]"
-            let _reText = [`(${pre_text})(${mid_text})(${aft_text})`, `(${pre_text2})(${mid_text})(${aft_text2})`];
+            const base_pre_text = "其自"
+            const pre_text = ">，。"
+            const mid_text = "让?对?为?使?(?:[我你他您]|大家)们?的?国?"
+            const base_aft_text = "人"
+            const aft_text = "<"
+            let _reText = [`([^${base_pre_text}${pre_text}])(${mid_text})([^${base_aft_text}${aft_text}])`, `([^${base_pre_text}])(${mid_text})([^${base_aft_text}])`];
             reText.value = _reText.join(seq);
         }
         if ( !originText.value ) {
-            let _originText = [" ", "\\.", '我的','最后的', "的同时"];
+            let _originText = [" ", "\\.(?=\\s)", '我的','最后的', "的同时", "作为一", "尤为重要"];
             originText.value = _originText.join(seq);
         }
         if ( !subText.value ) {
-            let _subText = ["", "。", '个人中心','最终', "时"];
+            let _subText = ["", "。", '个人中心','最终', "时", "这", "至关重要"];
             subText.value = _subText.join(seq);
         }
         // 统计字符串数量时忽略的字符
@@ -151,9 +181,6 @@ function highlightWords() {
     const highlightedText = text.replace(/\n/g, '<br>');
     // 写入
     document.getElementById('result').innerHTML = highlightedText;
-    // 统计字数
-    const length = highlightedText.replace(ignoreText,'').length;
-    document.getElementById('textNumber').innerHTML = length.toString();
 
 }
 
@@ -163,9 +190,13 @@ function removeHighlights() {
     const regexp1 = new RegExp(`<span class="highlightblue">(.*?)<\/span>`, 'gi');
     resultText = resultText.replace(regexp1, '$1' );
     // 更新正则表达式以包括紧随其后的任何符号
-    resultText = resultText.replace(/<span class="highlight">([¹²³⁴]?|【.*?†source】)<\/span>|<span class="highlight">(.*?)<\/span>([，。；？！,.;?!]*)/g, '');
+    resultText = resultText.replace(/<span class="highlight">([¹²³⁴⁵⁷⁸⁹]?|【.*?†source】|【.*?†来源】|)<\/span>|<span class="highlight">(.*?)<\/span>([，。；？！,.;?!]*)/g, '');
     //document.getElementById('result').innerHTML = resultText;
-    document.getElementById('restext').value = resultText.replace(/<br>/g, '\n');
+    resultText = resultText.replace(/<br>/g, '\n');
+    document.getElementById('resText').value = resultText;
+    // 统计字数
+    const length = resultText.replace(ignoreText,'').length;
+    document.getElementById('textNumber').innerHTML = length.toString();
 }
 
 function autoTextArea( self, maxHeight = 1000 ) {
@@ -176,20 +207,49 @@ function autoTextArea( self, maxHeight = 1000 ) {
     // 若事件监听器直接引用函数，可以使用this
     // this.style.height="auto";
     // this.style.height=((this.scrollHeight<maxHeight)?this.scrollHeight:maxHeight)+"px";
-    // document.getElementById('restext').value =this.scrollWidth+"\n"+this.scrollHeight;
+    // document.getElementById('resText').value =this.scrollWidth+"\n"+this.scrollHeight;
   }
+
+function allSelect_divElement() {
+    // 全选
+    const selElement = document.getElementById("result");
+    const range = document.createRange();
+    range.selectNodeContents(selElement);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
+function allSelect_inputElement(id) {
+    const ele = document.getElementById(id);
+    ele.select();
+}
+
+// 自定义文本框全选内容
+// function select(id) {
+//   if (document.selection) {
+//     var range = document.body.createTextRange()
+//     range.moveToElementText(document.getElementById(id))
+//     range.select();
+//   } else if (window.getSelection) {
+//     var range = document.createRange()
+//     range.selectNodeContents(document.getElementById(id))
+//     window.getSelection().removeAllRanges()
+//     window.getSelection().addRange(range)
+//   }
+// }
 
 document.querySelector("textarea").addEventListener("input",function(){
     highlightWords();
     removeHighlights();
     // 输入栏输入后，输出栏根据结果内容自动调整高度
-    var restext = document.getElementById('restext');
+    var resText = document.getElementById('resText');
     let maxHeight = 1000;
-    restext.style.height="auto";
-    restext.style.height=((restext.scrollHeight<maxHeight)?restext.scrollHeight:maxHeight)+'px';
+    resText.style.height="auto";
+    resText.style.height=((resText.scrollHeight<maxHeight)?resText.scrollHeight:maxHeight)+'px';
   });
 
-document.getElementById('restext').addEventListener("input", function () {
+document.getElementById('resText').addEventListener("input", function () {
     autoTextArea(this);
     const length = this.value.replace(ignoreText, '').length;
     document.getElementById('textNumber').innerHTML = length.toString();
