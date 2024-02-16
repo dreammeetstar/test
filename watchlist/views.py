@@ -147,6 +147,14 @@ def givesay():
     sayList.extend(restext)
     # if say['img'] is defined 提供一种思路，这是用在jinja2里的，python里可以判断是否为None
     sayList.sort(key=lambda x: x['createTime'] if isinstance(x, dict) else x.createTime, reverse=True)
+    # 字符串转换为列表
+    for say in sayList:
+        if isinstance(say, dict):
+            if say.get('picUrl'):
+                say['picUrl'] = json.loads(say['picUrl'])
+        else:
+            if say['img']:
+                say['img'] = json.loads(say['img'])
     return render_template('givesay.html', GiveSayUser=GiveSayUser, sayList=sayList)
 
 @app.route('/checktext', methods=['GET'])

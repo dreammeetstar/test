@@ -16,22 +16,28 @@
     {% for say in sayList %}
         <ul class="movie-list">
             <li>
+                <!-- 数据库对象 -->
                 {% if (say is defined) and (say.__class__.__name__ == 'GiveSay') %}
                     <div class="say-header">{{ say['name'] }}</div>
                     <div>{{ say['content'] }}</div>
                     {% if say['img'] != "" %}
-                        <img border=""  src="{{ say['img'] }}" data-isphoto="1" data-limit="400,300" height="200" width=""></img>
+                        {% for img in say['img'] %}
+                            <img border=""  src="{{ img }}" data-isphoto="1" data-limit="400,300" height="200" width=""></img>
+                        {% endfor %}
                     {% endif %}
+                <!-- 字典对象 -->
                 {% elif (say is sequence) and (say is not string) and (say is mapping) and (say.items) %}
                     <div class="say-header">{{ say['name'] }}</div>
                     <div>{{ say['content'] }}</div>
                     {% if say.get('picUrl') not in ("", None) %}
-                        <!-- 一个空间获取，一个GitHub获取 -->
-                        {# <img border=""  src="{{ say['picUrl'] }}" data-isphoto="1" data-limit="400,300" height="200" width=""></img> #}
-                        <img border=""  src="https://raw.githubusercontent.com/FarEastSea/schedule/master/Zone/Img/{{ say['createTime'] }}" data-isphoto="1" data-limit="400,300" height="200" width=""></img>
+                        {% for img in say['picUrl'] %}
+                            <!-- 一个空间获取，一个GitHub获取 -->
+                            {# <img border=""  src="{{ img }}" data-isphoto="1" data-limit="400,300" height="200" width=""></img> #}
+                            <img border=""  src="https://raw.githubusercontent.com/FarEastSea/schedule/master/Zone/Img/{{ say['createTime'] }}_{{ say['picUrl'].index(img) }}" data-isphoto="1" data-limit="400,300" height="200" width=""></img>
+                        {% endfor %}
                     {% endif %}
                 {% endif %}
             </li>
         </ul>
-    {% endfor%}
+    {% endfor %}
 {% endblock %}
