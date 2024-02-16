@@ -151,10 +151,10 @@ def givesay():
     for say in sayList:
         if isinstance(say, dict):
             if say.get('picUrl'):
-                say['picUrl'] = json.loads(say['picUrl'])
+                say['picUrl'] = say['picUrl']
         else:
-            if say['img']:
-                say['img'] = json.loads(say['img'])
+            if say.img:
+                say.img = json.loads(say.img)
     return render_template('givesay.html', GiveSayUser=GiveSayUser, sayList=sayList)
 
 @app.route('/checktext', methods=['GET'])
