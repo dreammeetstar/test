@@ -127,7 +127,7 @@ def givesay():
         content = request.form['content']
         img = request.form['img']
         createTime = round(time.time())
-        if not name or not content or len(name) > 120 or len(content) > 900:
+        if not name or not content or len(name) > 120 or len(content) > 900 or (img and not isinstance(img, str)) or (img and not isJson(img)):
             flash('Invalid input.')
             return redirect(url_for('givesay'))
         say = GiveSay(name=name, content=content, img=img, createTime=createTime)
@@ -156,6 +156,15 @@ def givesay():
             if say.img:
                 say.img = json.loads(say.img)
     return render_template('givesay.html', GiveSayUser=GiveSayUser, sayList=sayList)
+
+
+def isJson(text):
+    """is json text?"""
+    try:
+        json.loads(text)
+    except Exception:
+        return False
+    return True
 
 @app.route('/checktext', methods=['GET'])
 def checktext():
