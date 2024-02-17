@@ -127,7 +127,7 @@ def givesay():
         content = request.form['content']
         img = request.form['img']
         createTime = round(time.time())
-        if not name or not content or len(name) > 120 or len(content) > 900 or (img and not isinstance(img, str)) or (img and not isJson(img)):
+        if not name or not content or len(name) > 120 or len(content) > 900 or (img and not isJson(img)) or (img and not img.startswith('["')):
             flash('Invalid input.')
             return redirect(url_for('givesay'))
         say = GiveSay(name=name, content=content, img=img, createTime=createTime)
