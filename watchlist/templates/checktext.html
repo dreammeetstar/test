@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title>连接词高亮及删除工具</title>
+    <title>高亮及删除工具</title>
     <style>
         .highlight {
             color: red; /* 高亮颜色 */
@@ -89,7 +88,7 @@
     </style>
 </head>
 <body>
-    <h2 align="center">连接词高亮及删除工具</h2>
+    <h2 align="center">高亮及删除工具</h2>
     <form class="inputForm">
         高亮 <input type="text" id="Highlight" class="reTextInput" name="Highlight" autocomplete="off" value="">
         正则 <input type="text" id="reText" class="reTextInput" name="reText" autocomplete="off" value="">
@@ -130,7 +129,7 @@
         const subText = document.getElementsByName('subText')[0];
         const seq = ',';
         if ( !Highlight.value ) {
-            let _Highlight = ["首先","然而","因此","值得注意的是","然后","但是","同时","此外","总之","通常","目前","综上所述","需要注意的是","可是","故此","再次","此后","最后的?","一般来说","1、" ,"2、","3、","5、","6、","其次","在这样的情况下","除了以上提","(?:为了)?解决这一(?:问题)?","因此","以下将","百度百科","但幸运的是","总体而言","但在探讨","接下来","近年来","这是一个","作为现代","在这一过程中","上述提到","以上四种","为此下面将","以下几个方面","四个方面", "【.*?†source】", "【.*?†来源】", "¹", "²", "³", "⁴", "⁵", "⁷", "⁸", "⁹", "", "\\*", "#"];
+            let _Highlight = ["首先","然而","因此","值得注意的是","然后","但是","同时","此外","总之","通常","目前","综上所述","需要注意的是","可是","故此","再次","此后","最后的?","一般来说","1、" ,"2、","3、","5、","6、","其次","在这样的情况下","除了以上提","(?:为了)?解决这一(?:问题)?","因此","以下将","百度百科","但幸运的是","总体而言","但在探讨","接下来","这是一个","作为现代","在这一过程中","上述提到","以上四种","为此下面将","四个方面", "具体来说", "【.*?†source】", "【.*?†来源】", "¹", "²", "³", "⁴", "⁵", "⁷", "⁸", "⁹", "", "\\*", "#"];
             Highlight.value = _Highlight.join(seq);
         }
         if ( !reText.value ) {
@@ -143,11 +142,11 @@
             reText.value = _reText.join(seq);
         }
         if ( !originText.value ) {
-            let _originText = [" ", "\\.(?=\\s)", '我的','最后的', "的同时", "作为一", "尤为重要"];
+            let _originText = [" ", "\\.(?=\\s)", '我的','最后的', "的同时", "作为一", "尤为重要", "近年来", "以下几[种个]", "至关重要"];
             originText.value = _originText.join(seq);
         }
         if ( !subText.value ) {
-            let _subText = ["", "。", '个人中心','最终', "时", "这", "至关重要"];
+            let _subText = ["", "。", '个人中心','最终', "时", "这", "很重要", "这些年", "这些", "很重要"];
             subText.value = _subText.join(seq);
         }
         // 统计字符串数量时忽略的字符
